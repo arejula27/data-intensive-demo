@@ -9,14 +9,15 @@ KAMALA_TOPIC = "kamala_tweets"
 TRUMP_TWEETS_FILE = "../twitter_scraper/trump_tweets.csv"
 KAMALA_TWEETS_FILE = "../twitter_scraper/kamala_tweets.tsv"
 
-# Create Kafka topics
-create_kafka_topic(TRUMP_TOPIC, 2, 3, SERVERS)
-create_kafka_topic(KAMALA_TOPIC, 2, 3, SERVERS)
+if __name__ == "__main__":
+    # Create Kafka topics
+    create_kafka_topic(TRUMP_TOPIC, 2, 3, SERVERS)
+    create_kafka_topic(KAMALA_TOPIC, 2, 3, SERVERS)
 
-# Start the stream
-feed_tweets(
-    [TRUMP_TOPIC, KAMALA_TOPIC], [TRUMP_TWEETS_FILE, KAMALA_TWEETS_FILE], SERVERS
-)
+    # Start the stream
+    feed_tweets(
+        [TRUMP_TOPIC, KAMALA_TOPIC], [TRUMP_TWEETS_FILE, KAMALA_TWEETS_FILE], SERVERS
+    )
 
-# Handle the stream and classify the tweets
-handle_stream(TRUMP_TOPIC, KAMALA_TOPIC, SERVERS)
+    # Handle the stream and classify the tweets
+    handle_stream(TRUMP_TOPIC, KAMALA_TOPIC, SERVERS)
