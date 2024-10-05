@@ -1,0 +1,56 @@
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Ignore distribution / packaging directories
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Ignore virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Ignore version control directories
+.git/
+.gitignore
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+
+# Ignore logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Ignore Sphinx documentation
+docs/_build/
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.iml

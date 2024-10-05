@@ -1,0 +1,9 @@
+kafka-python
+confluent-kafka
+transformers==4.21.2
+pandas==2.2.3
+scipy==1.14.1
+torch==2.4.1
+pyspark
+pymongo
+selenium
