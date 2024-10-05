@@ -5,7 +5,9 @@ import csv
 import concurrent.futures
 
 
-def produce_tweets(topic_name, csv_file, servers="localhost:9092,localhost:9093,localhost:9094"):
+SERVERS = "localhost:9092,localhost:9093,localhost:9094"
+
+def produce_tweets(topic_name, csv_file, servers=SERVERS):
     producer = KafkaProducer(bootstrap_servers=servers,
                              value_serializer=lambda v: json.dumps(v).encode('utf-8'))
     with open(csv_file, 'r') as file:
@@ -27,11 +29,11 @@ def produce_tweets(topic_name, csv_file, servers="localhost:9092,localhost:9093,
     producer.flush()
     producer.close()
 
+def feed_tweets():
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Create the concurrent tasks
+        future_trump = executor.submit(produce_tweets, 'trump_tweets', '../twitter-scraper/tweets.csv', SERVERS)
+        future_kamala = executor.submit(produce_tweets, 'kamala_tweets', '../twitter-scraper/kamala_tweets.tsv', SERVERS)
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    # Crear las tareas concurrentes
-    future_trump = executor.submit(produce_tweets, 'trump_tweets', '../twitter-scraper/tweets.csv', "localhost:9092,localhost:9093,localhost:9094")
-    future_kamala = executor.submit(produce_tweets, 'kamala_tweets', '../twitter-scraper/khamal_tweets.tsv', "localhost:9092,localhost:9093,localhost:9094")
-
-    # Esperar a que terminen las tareas (opcional)
-    concurrent.futures.wait([future_trump, future_kamala])
+        # Wait for the tasks to finish (optional
+        concurrent.futures.wait([future_trump, future_kamala])

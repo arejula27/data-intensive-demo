@@ -6,7 +6,6 @@ import logging
 from pymongo import MongoClient
 from datetime import datetime
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -75,20 +74,24 @@ def classify_kamala(batch_df: DataFrame, batch_id: int):
         OPPOSE_KEY: K_OPPOSE_COUNT
     })
 
+
 def handle_stream():
     spark = SparkSession.builder \
         .appName("KafkaSparkStreamingJSON") \
         .config("spark.jars.packages",
-                "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2,"
-                "org.mongodb.spark:mongo-spark-connector_2.12:3.0.1") \
-        .config("spark.mongodb.write.connection.uri",
-                "mongodb://127.0.0.1:27017/mydb.usa2024") \
+                "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2,") \
         .getOrCreate()
 
     df = spark.readStream.format("kafka") \
         .option("kafka.bootstrap.servers",
                 "localhost:9092,localhost:9093,localhost:9094") \
         .option("subscribe", "trump_tweets") \
+        .load()
+
+    df2 = spark.readStream.format("kafka") \
+        .option("kafka.bootstrap.servers",
+                "localhost:9092,localhost:9093,localhost:9094") \
+        .option("subscribe", "kamala_tweets") \
         .load()
 
     json_schema = StructType() \
@@ -99,8 +102,17 @@ def handle_stream():
         .select(from_json(col("value"), json_schema).alias("data")) \
         .select("data.username", "data.tweet")
 
+    df2 = df2.selectExpr("CAST(value AS STRING)") \
+        .select(from_json(col("value"), json_schema).alias("data")) \
+        .select("data.username", "data.tweet")
+
     query = df.writeStream \
         .foreachBatch(classify_trump) \
         .start()
 
+    query2 = df2.writeStream \
+        .foreachBatch(classify_kamala) \
+        .start()
+
     query.awaitTermination()
+    query2.awaitTermination()
