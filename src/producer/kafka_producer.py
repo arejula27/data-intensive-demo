@@ -5,20 +5,23 @@ import csv
 import concurrent.futures
 
 
+# Default Kafka server configuration
 SERVERS = "localhost:9092,localhost:9093,localhost:9094"
 
+
 def produce_tweets(topic_name, csv_file, servers=SERVERS):
-    producer = KafkaProducer(bootstrap_servers=servers,
-                             value_serializer=lambda v: json.dumps(v).encode('utf-8'))
-    with open(csv_file, 'r') as file:
-        reader = csv.DictReader(
-            file, fieldnames=['username', 'tweet'], delimiter='\t')
+    producer = KafkaProducer(
+        bootstrap_servers=servers,
+        value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+    )
+    with open(csv_file, "r") as file:
+        reader = csv.DictReader(file, fieldnames=["username", "tweet"], delimiter="\t")
 
         for row in reader:
-            if row['username'] and row['tweet']:
+            if row["username"] and row["tweet"]:
                 message = {
-                    'username': row['username'].strip(),
-                    'tweet': row['tweet'].strip()
+                    "username": row["username"].strip(),
+                    "tweet": row["tweet"].strip(),
                 }
                 producer.send(topic_name, value=message)
                 print(f"Sent: {message}")
@@ -29,11 +32,15 @@ def produce_tweets(topic_name, csv_file, servers=SERVERS):
     producer.flush()
     producer.close()
 
-def feed_tweets():
+
+def feed_tweets(topics: list, csv_files: list, servers=SERVERS):
     with concurrent.futures.ThreadPoolExecutor() as executor:
+        task_list = []
+
         # Create the concurrent tasks
-        future_trump = executor.submit(produce_tweets, 'trump_tweets', '../twitter-scraper/tweets.csv', SERVERS)
-        future_kamala = executor.submit(produce_tweets, 'kamala_tweets', '../twitter-scraper/kamala_tweets.tsv', SERVERS)
+        for topic, file in zip(topics, csv_files):
+            future = executor.submit(produce_tweets, topic, file, servers)
+            task_list.append(future)
 
         # Wait for the tasks to finish (optional
-        concurrent.futures.wait([future_trump, future_kamala])
+        concurrent.futures.wait(task_list)

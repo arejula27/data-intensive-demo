@@ -14,15 +14,17 @@ def extract_tweets(containers):
         try:
             # Extract the username
             user = container.find_element(
-                By.XPATH, './/div[@data-testid="User-Name"]//span').text
+                By.XPATH, './/div[@data-testid="User-Name"]//span'
+            ).text
 
             # Extract the tweet text
             tweet_texts = container.find_element(
-                By.XPATH, './/div[@data-testid="tweetText"]')
+                By.XPATH, './/div[@data-testid="tweetText"]'
+            )
 
             tweet = ""
-            for text in tweet_texts.find_elements(By.XPATH, './/span'):
-                tweet += text.text+" "
+            for text in tweet_texts.find_elements(By.XPATH, ".//span"):
+                tweet += text.text + " "
 
             # remvoe new lines and tabs from the tweet
             tweet = tweet.replace("\n", " ").replace("\t", " ")
