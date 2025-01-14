@@ -8,3 +8,5 @@ This repository contains a demo of a data intensive application. The application
 - [Spark](https://spark.apache.org/) for the data processing
 - [Transformer](https://huggingface.co/docs/transformers/en/index) for sentiment analysis
 - [MongoDB](https://www.mongodb.com/) for the database
+## Deploying
+run `docker compose up` in a terminal, after a few seconds you should be able to watch the dashboard in real-time at `localhost:1323`
